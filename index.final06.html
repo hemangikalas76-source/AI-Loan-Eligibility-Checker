@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrediAI - Intelligent Loan Eligibility & Financial Analytics</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                            accent: '#10b981'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+        }
+        .dark .glass-card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #6366f1;
+            border-radius: 9999px;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #6366f1 0%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #4f46e5 0%, #059669 100%);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-300">
+
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 z-50 glass-panel border-b border-slate-200 dark:border-slate-800 px-4 lg:px-8 py-3">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-500/20">
+                    <i class="fa-solid fa-brain-circuit"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-extrabold tracking-tight">Credi<span class="gradient-text">AI</span></span>
+                    <span class="hidden sm:inline-block text-xs bg-indigo-100 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 font-semibold px-2 py-0.5 rounded-full ml-2 border border-indigo-200 dark:border-indigo-800">v2.4 AI Model</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <button id="themeToggleBtn" onclick="toggleTheme()" class="p-2.5 rounded-xl bg-slate-200/60 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition">
+                    <i id="themeIcon" class="fa-solid fa-moon"></i>
+                </button>
+                <button onclick="resetApplication()" class="hidden md:flex items-center gap-2 text-xs font-semibold px-3 py-2 rounded-xl bg-slate-200/60 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition">
+                    <i class="fa-solid fa-rotate-right"></i> Reset Form
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 lg:px-8 py-8 space-y-8">
+        
+        <!-- Hero Banner -->
+        <header class="text-center max-w-3xl mx-auto space-y-3">
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">
+                AI-Powered Instant <span class="gradient-text">Loan Approval Predictor</span>
+            </h1>
+            <p class="text-slate-600 dark:text-slate-400 text-sm md:text-base">
+                Get real-time credit underwriting insights, personalized risk scores, and tailored financial recommendations in seconds using advanced AI analytics.
+            </p>
+        </header>
+
+        <!-- Main Workspace (Grid split: Form / Analysis) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+            <!-- LEFT COLUMN: Multi-Step Form (5 Cols on LG) -->
+            <section class="lg:col-span-5 glass-panel rounded-2xl p-6 shadow-xl relative overflow-hidden">
+                <!-- Step Progress Bar -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center text-xs font-semibold mb-2 text-slate-500 dark:text-slate-400">
+                        <span id="stepIndicatorText">STEP 1 OF 3: INCOME & EMPLOYMENT</span>
+                        <span id="stepPercentText" class="text-indigo-600 dark:text-indigo-400">33%</span>
+                    </div>
+                    <div class="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div id="progressBar" class="h-full gradient-bg transition-all duration-300 w-1/3"></div>
+                    </div>
+                </div>
+
+                <!-- Form Steps Container -->
+                <form id="loanForm" onsubmit="event.preventDefault();" class="space-y-5">
+                    
+                    <!-- STEP 1: INCOME & EMPLOYMENT -->
+                    <div id="step1" class="step-content space-y-4">
+                        <h2 class="text-lg font-bold flex items-center gap-2 text-slate-800 dark:text-slate-200 border-b border-slate-200 dark:border-slate-800 pb-2">
+                            <i class="fa-solid fa-wallet text-indigo-500"></i> Income & Employment
+                        </h2>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                                Monthly Net Income ($) <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-3 text-slate-400 font-semibold">$</span>
+                                <input type="number" id="monthlyIncome" value="6500" min="500" step="100" required
+                                    class="w-full pl-8 pr-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 text-sm font-medium outline-none transition">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                                Employment Type
+                            </label>
+                            <select id="employmentType"
+                                class="w-full px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 text-sm font-medium outline-none transition">
+                                <option value="salaried_corporate">Salaried (Full-time Corporate)</option>
+                                <option value="salaried_govt">Salaried (Government / PSU)</option>
+                                <option value="self_employed_biz">Self-Employed (Business Owner)</option>
+                                <option value="freelance">Freelancer / Gig Contractor</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                                    Applicant Age
+                                </label>
+                                <input type="number" id="applicantAge" value="32" min="18" max="75" required
+                                    class="w-full px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 text-sm font-medium outline-none transition">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                                    Total Liquid Assets ($)
+                                </label>
+                                <input type="number" id="liquidAssets" value="25000" min="0" step="500"
+                                    class="w-full px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 text-sm font-medium outline-none transition">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: DEBTS & CREDIT PROFILE -->
+                    <div id="step2" class="step-content hidden space-y-4">
+                        <h2 class="text-lg font-bold flex items-center gap-2 text-slate-800 dark:text-slate-200 border-b border-slate-200 dark:border-slate-800 pb-2">
+                            <i class="fa-solid fa-credit-card text-indigo-500"></i> Debts & Credit Profile
+                        </h2>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                                Existing Monthly EMIs / Debts ($)
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-3 text-slate-400 font-semibold">$</span>
+                                <input type="number" id="existingEmi" value="1200" min="0" step="50" required
+                                    class="w-full pl-8 pr-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 text-sm font-medium outline-none transition">
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400">
+                                    Credit Score (CIBIL / FICO)
+                                </label>
+                                <span id="creditScoreDisplay" class="text-xs font-bold text-emerald-500">750 (Good)</span>
+                            </div>
+                            <input type="range" id="creditScore" min="300" max="850" value="750" oninput="updateCreditScoreLabel(this.value)"
+                                class="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                            <div class="flex justify-between text-[10px] text-slate-400 font-semibold mt-1">
+                                <span>300 (Poor)</span>
+                                <span>650 (Fair)</span>
+                                <span>750 (Good)</span>
+                                <span>850 (Excellent)</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                                Collateral / Property Value ($) <span class="text-slate-400 font-normal">(Optional)</span>
+                            </label>
+                            <input type="number" id="collateralValue" value="50000" min="0" step="1000"
+                                class="w-full px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 text-sm font-medium outline-none transition">
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: LOAN REQUEST -->
+                    <div id="step3" class="step-content hidden space-y-4">
+                        <h2 class="text-lg font-bold flex items-center gap-2 text-slate-800 dark:text-slate-200 border-b border-slate-200 dark:border-slate-800 pb-2">
+                            <i class="fa-solid fa-hand-holding-dollar text-indigo-500"></i> Loan Request
+                        </h2>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                                Requested Loan Amount ($)
+                            </label>
+                            <input type="number" id="requestedAmount" value="45000" min="1000" step="1000" required
+                                class="w-full px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 text-sm font-semibold text-indigo-600 dark:text-indigo-400 outline-none transition">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                                Loan Purpose
+                            </label>
+                            <select id="loanPurpose"
+                                class="w-full px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 text-sm font-medium outline-none transition">
+                                <option value="personal">Personal / Miscellaneous</option>
+                                <option value="home">Home Purchase / Renovation</option>
+                                <option value="auto">Vehicle / Auto Purchase</option>
+                                <option value="business">Business Expansion</option>
+                                <option value="education">Higher Education</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                                    Tenure (Years)
+                                </label>
+                                <input type="number" id="loanTenureYears" value="5" min="1" max="30" required
+                                    class="w-full px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 text-sm font-medium outline-none transition">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                                    Co-Applicant Income ($)
+                                </label>
+                                <input type="number" id="coApplicantIncome" value="0" min="0" step="100"
+                                    class="w-full px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 text-sm font-medium outline-none transition">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step Navigation Controls -->
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-800 gap-3">
+                        <button type="button" id="prevBtn" onclick="navigateStep(-1)" disabled
+                            class="px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-semibold text-xs disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-300 dark:hover:bg-slate-700 transition">
+                            <i class="fa-solid fa-arrow-left mr-1"></i> Back
+                        </button>
+
+                        <button type="button" id="nextBtn" onclick="navigateStep(1)"
+                            class="px-5 py-2.5 rounded-xl gradient-bg text-white font-semibold text-xs hover:opacity-90 transition shadow-lg shadow-indigo-500/20 flex items-center gap-1.5">
+                            <span>Next Step</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </button>
+                    </div>
+
+                </form>
+            </section>
+
+            <!-- RIGHT COLUMN: AI Results & Analytics (7 Cols on LG) -->
+            <section class="lg:col-span-7 space-y-6">
+
+                <!-- Primary Result Header / Probability Score Card -->
+                <div class="glass-panel rounded-2xl p-6 shadow-xl relative overflow-hidden">
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                        
+                        <!-- Circular Gauge / Score -->
+                        <div class="relative w-36 h-36 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                <path class="text-slate-200 dark:text-slate-800" stroke-width="3.5" stroke="currentColor" fill="none"
+                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path id="scoreGaugeArc" class="text-emerald-500 transition-all duration-1000 stroke-current" stroke-width="3.5" stroke-dasharray="82, 100" stroke-linecap="round" fill="none"
+                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
+                            <div class="absolute flex flex-col items-center justify-center text-center">
+                                <span id="approvalScoreText" class="text-3xl font-extrabold tracking-tight">82%</span>
+                                <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">Match Score</span>
+                            </div>
+                        </div>
+
+                        <!-- Decision Banner & Core Metrics -->
+                        <div class="space-y-3 text-center md:text-left flex-1">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold" id="statusBadge">
+                                <i class="fa-solid fa-circle-check"></i> <span id="statusBadgeText">HIGH APPROVAL CHANCE</span>
+                            </div>
+                            <h2 id="approvalHeadline" class="text-xl font-bold">Your Profile Meets Underwriting Standards</h2>
+                            <p id="approvalSubtext" class="text-xs text-slate-500 dark:text-slate-400">Based on your $6,500 monthly income and credit score of 750, AI calculates robust debt-servicing capability.</p>
+
+                            <!-- Key Numbers Grid -->
+                            <div class="grid grid-cols-3 gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+                                <div>
+                                    <span class="block text-[10px] uppercase font-bold text-slate-400">Max Loan Limit</span>
+                                    <span id="maxLoanLimitText" class="text-sm font-extrabold text-indigo-600 dark:text-indigo-400">$62,400</span>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] uppercase font-bold text-slate-400">Est. Interest</span>
+                                    <span id="estInterestText" class="text-sm font-extrabold text-slate-800 dark:text-slate-200">8.5% - 9.2%</span>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] uppercase font-bold text-slate-400">Calculated EMI</span>
+                                    <span id="calculatedEmiText" class="text-sm font-extrabold text-emerald-600 dark:text-emerald-400">$923 / mo</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Dashboard Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Chart 1: Cash Flow & Debt Ratio -->
+                    <div class="glass-card rounded-2xl p-4 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xs font-bold uppercase text-slate-500 tracking-wider flex items-center gap-1.5">
+                                <i class="fa-solid fa-chart-pie text-indigo-500"></i> Cash Flow Allocation
+                            </h3>
+                            <span id="dtiBadge" class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-400">DTI: 32.6%</span>
+                        </div>
+                        <div class="h-48 relative flex items-center justify-center">
+                            <canvas id="cashFlowChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Chart 2: EMI vs Net Disposable Income -->
+                    <div class="glass-card rounded-2xl p-4 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xs font-bold uppercase text-slate-500 tracking-wider flex items-center gap-1.5">
+                                <i class="fa-solid fa-scale-balanced text-indigo-500"></i> Income vs Debt Burden
+                            </h3>
+                        </div>
+                        <div class="h-48 relative flex items-center justify-center">
+                            <canvas id="incomeVsDebtChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive What-If Simulator Slider -->
+                <div class="glass-panel rounded-2xl p-5 space-y-4 border-l-4 border-l-indigo-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-sm font-bold flex items-center gap-2">
+                                <i class="fa-solid fa-sliders text-indigo-500"></i> Real-Time "What-If" Loan Simulator
+                            </h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Adjust parameters on the fly to see how your eligibility probability shifts.</p>
+                        </div>
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">Live Sync</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        <!-- Amount Slider -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-xs font-semibold">
+                                <span class="text-slate-500">Loan Amount:</span>
+                                <span id="simAmountVal" class="text-indigo-600 dark:text-indigo-400 font-bold">$45,000</span>
+                            </div>
+                            <input type="range" id="simAmount" min="5000" max="150000" step="2500" value="45000" oninput="onSimChange()"
+                                class="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                            <div class="flex justify-between text-[10px] text-slate-400 font-medium">
+                                <span>$5k</span>
+                                <span>$75k</span>
+                                <span>$150k</span>
+                            </div>
+                        </div>
+
+                        <!-- Tenure Slider -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-xs font-semibold">
+                                <span class="text-slate-500">Tenure Duration:</span>
+                                <span id="simTenureVal" class="text-indigo-600 dark:text-indigo-400 font-bold">5 Years</span>
+                            </div>
+                            <input type="range" id="simTenure" min="1" max="25" step="1" value="5" oninput="onSimChange()"
+                                class="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                            <div class="flex justify-between text-[10px] text-slate-400 font-medium">
+                                <span>1 Yr</span>
+                                <span>12 Yrs</span>
+                                <span>25 Yrs</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+        </div>
+
+        <!-- BOTTOM SECTION: AI Advisor Tips & Risk Assessment Breakdown -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+            
+            <!-- Risk Analysis Matrix (5 Cols) -->
+            <div class="md:col-span-5 glass-panel rounded-2xl p-6 space-y-4">
+                <h3 class="text-base font-bold flex items-center gap-2 text-slate-800 dark:text-slate-200">
+                    <i class="fa-solid fa-shield-halved text-indigo-500"></i> Underwriting Risk Breakdown
+                </h3>
+
+                <div class="space-y-3" id="riskFactorContainer">
+                    <!-- Risk Item 1 -->
+                    <div class="glass-card p-3 rounded-xl flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold text-xs">
+                                <i class="fa-solid fa-credit-card"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold">Credit History Risk</h4>
+                                <p class="text-[10px] text-slate-500">Score of 750 demonstrates prime reliability</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">Low Risk</span>
+                    </div>
+
+                    <!-- Risk Item 2 -->
+                    <div class="glass-card p-3 rounded-xl flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold text-xs">
+                                <i class="fa-solid fa-briefcase"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold">Income Stability</h4>
+                                <p class="text-[10px] text-slate-500">Salaried corporate position</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">Low Risk</span>
+                    </div>
+
+                    <!-- Risk Item 3 -->
+                    <div class="glass-card p-3 rounded-xl flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center font-bold text-xs">
+                                <i class="fa-solid fa-scale-unbalanced"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold">Debt Service Ratio</h4>
+                                <p class="text-[10px] text-slate-500">Current commitments at 32% of total income</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400">Moderate</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Advisor Recommendations (7 Cols) -->
+            <div class="md:col-span-7 glass-panel rounded-2xl p-6 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-base font-bold flex items-center gap-2 text-slate-800 dark:text-slate-200">
+                        <i class="fa-solid fa-wand-magic-sparkles text-indigo-500"></i> AI Financial Advisor Recommendations
+                    </h3>
+                    <span class="text-xs text-indigo-500 font-semibold cursor-pointer hover:underline" onclick="recalculateAI()">
+                        <i class="fa-solid fa-rotate"></i> Refresh Insights
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="recommendationsContainer">
+                    <!-- Recommendation Card 1 -->
+                    <div class="glass-card p-4 rounded-xl space-y-2 border-l-2 border-l-emerald-500">
+                        <div class="flex items-center gap-2 text-xs font-bold text-slate-800 dark:text-slate-200">
+                            <i class="fa-solid fa-circle-arrow-up text-emerald-500"></i> Increase Approval Odds to 95%
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-400">
+                            Adding a co-applicant with an income of $2,000+ per month will lower your combined DTI ratio below 25%.
+                        </p>
+                    </div>
+
+                    <!-- Recommendation Card 2 -->
+                    <div class="glass-card p-4 rounded-xl space-y-2 border-l-2 border-l-indigo-500">
+                        <div class="flex items-center gap-2 text-xs font-bold text-slate-800 dark:text-slate-200">
+                            <i class="fa-solid fa-percent text-indigo-500"></i> Lower Interest Rate Opportunity
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-400">
+                            Improving your credit score from 750 to 780 could unlock prime lending rates starting at 7.8% APR.
+                        </p>
+                    </div>
+
+                    <!-- Recommendation Card 3 -->
+                    <div class="glass-card p-4 rounded-xl space-y-2 border-l-2 border-l-amber-500">
+                        <div class="flex items-center gap-2 text-xs font-bold text-slate-800 dark:text-slate-200">
+                            <i class="fa-solid fa-clock text-amber-500"></i> Tenure Adjustment
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-400">
+                            Extending tenure from 5 to 7 years will reduce monthly EMI by $210, easing cash flow pressure.
+                        </p>
+                    </div>
+
+                    <!-- Recommendation Card 4 -->
+                    <div class="glass-card p-4 rounded-xl space-y-2 border-l-2 border-l-blue-500">
+                        <div class="flex items-center gap-2 text-xs font-bold text-slate-800 dark:text-slate-200">
+                            <i class="fa-solid fa-piggy-bank text-blue-500"></i> Pre-closure Strategy
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-400">
+                            Paying off $300/mo of existing small personal debts before applying will drastically boost eligibility.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Full-Width Section: Amortization Schedule Table -->
+        <section class="glass-panel rounded-2xl p-6 shadow-xl space-y-4">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+                <div>
+                    <h3 class="text-lg font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-table-list text-indigo-500"></i> Estimated Amortization Schedule
+                    </h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Detailed month-by-month payment breakdown for requested loan</p>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <button onclick="exportScheduleCSV()" class="px-3 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-semibold hover:bg-slate-300 dark:hover:bg-slate-700 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-csv text-indigo-500"></i> Export CSV
+                    </button>
+                    <button onclick="printAmortization()" class="px-3 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-semibold hover:bg-slate-300 dark:hover:bg-slate-700 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-print text-indigo-500"></i> Print
+                    </button>
+                </div>
+            </div>
+
+            <!-- Scrollable Table -->
+            <div class="overflow-x-auto max-h-80 rounded-xl border border-slate-200 dark:border-slate-800">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead class="bg-slate-100 dark:bg-slate-900 sticky top-0 font-bold text-slate-600 dark:text-slate-400">
+                        <tr>
+                            <th class="p-3">Month</th>
+                            <th class="p-3">Payment (EMI)</th>
+                            <th class="p-3">Principal</th>
+                            <th class="p-3">Interest</th>
+                            <th class="p-3">Remaining Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="amortizationTbody" class="divide-y divide-slate-200 dark:divide-slate-800/60 font-medium">
+                        <!-- Dynamic Amortization Rows Injected Here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Notification Toast Modal -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-700 text-xs font-semibold">
+        <i id="toastIcon" class="fa-solid fa-circle-info text-indigo-400"></i>
+        <span id="toastMsg">Notification message</span>
+    </div>
+
+    <script>
+        // Global State
+        let currentStep = 1;
+        let cashFlowChartInstance = null;
+        let incomeVsDebtChartInstance = null;
+
+        // Initialize Application
+        window.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            recalculateAI();
+            updateStepVisibility();
+        });
+
+        // Theme Toggle Functionality
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('themeIcon');
+            
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+                showToast("Switched to Light Mode");
+            } else {
+                html.classList.add('dark');
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+                showToast("Switched to Dark Mode");
+            }
+            updateChartColors();
+        }
+
+        // Form Step Navigation
+        function navigateStep(direction) {
+            currentStep += direction;
+            if (currentStep < 1) currentStep = 1;
+            if (currentStep > 3) currentStep = 3;
+            
+            updateStepVisibility();
+        }
+
+        function updateStepVisibility() {
+            // Hide all steps
+            document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
+            
+            // Show current step
+            document.getElementById(`step${currentStep}`).classList.remove('hidden');
+
+            // Update UI Labels & Progress
+            const progress = document.getElementById('progressBar');
+            const stepText = document.getElementById('stepIndicatorText');
+            const percentText = document.getElementById('stepPercentText');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            if (currentStep === 1) {
+                stepText.innerText = "STEP 1 OF 3: INCOME & EMPLOYMENT";
+                percentText.innerText = "33%";
+                progress.style.width = "33%";
+                prevBtn.disabled = true;
+                nextBtn.querySelector('span').innerText = "Next Step";
+            } else if (currentStep === 2) {
+                stepText.innerText = "STEP 2 OF 3: DEBTS & CREDIT PROFILE";
+                percentText.innerText = "66%";
+                progress.style.width = "66%";
+                prevBtn.disabled = false;
+                nextBtn.querySelector('span').innerText = "Next Step";
+            } else if (currentStep === 3) {
+                stepText.innerText = "STEP 3 OF 3: LOAN REQUEST";
+                percentText.innerText = "100%";
+                progress.style.width = "100%";
+                prevBtn.disabled = false;
+                nextBtn.querySelector('span').innerText = "Run AI Analysis";
+            }
+
+            recalculateAI();
+        }
+
+        function updateCreditScoreLabel(val) {
+            const label = document.getElementById('creditScoreDisplay');
+            let rating = "Poor";
+            let color = "text-rose-500";
+
+            if (val >= 750) {
+                rating = "Excellent";
+                color = "text-emerald-500";
+            } else if (val >= 680) {
+                rating = "Good";
+                color = "text-emerald-400";
+            } else if (val >= 600) {
+                rating = "Fair";
+                color = "text-amber-500";
+            }
+
+            label.className = `text-xs font-bold ${color}`;
+            label.innerText = `${val} (${rating})`;
+            recalculateAI();
+        }
+
+        // Live What-If Slider Handler
+        function onSimChange() {
+            const amount = document.getElementById('simAmount').value;
+            const tenure = document.getElementById('simTenure').value;
+
+            document.getElementById('simAmountVal').innerText = `$${parseInt(amount).toLocaleString()}`;
+            document.getElementById('simTenureVal').innerText = `${tenure} ${tenure == 1 ? 'Year' : 'Years'}`;
+
+            // Sync with step 3 inputs
+            document.getElementById('requestedAmount').value = amount;
+            document.getElementById('loanTenureYears').value = tenure;
+
+            recalculateAI();
+        }
+
+        // Core Calculation & AI Prediction Logic
+        function recalculateAI() {
+            // Get Form Inputs
+            const monthlyIncome = parseFloat(document.getElementById('monthlyIncome').value) || 0;
+            const coIncome = parseFloat(document.getElementById('coApplicantIncome').value) || 0;
+            const totalMonthlyIncome = monthlyIncome + coIncome;
+
+            const existingEmi = parseFloat(document.getElementById('existingEmi').value) || 0;
+            const creditScore = parseInt(document.getElementById('creditScore').value) || 300;
+            const requestedAmount = parseFloat(document.getElementById('requestedAmount').value) || 0;
+            const tenureYears = parseInt(document.getElementById('loanTenureYears').value) || 1;
+            const empType = document.getElementById('employmentType').value;
+
+            // Base Interest Rate mapping based on credit score
+            let baseRate = 12.0;
+            if (creditScore >= 780) baseRate = 7.5;
+            else if (creditScore >= 720) baseRate = 8.5;
+            else if (creditScore >= 650) baseRate = 10.5;
+            else baseRate = 14.0;
+
+            // Monthly Interest Rate & Total Months
+            const monthlyRate = baseRate / 100 / 12;
+            const totalMonths = tenureYears * 12;
+
+            // Monthly EMI Calculation: EMI = P * r * (1+r)^n / ((1+r)^n - 1)
+            let calculatedEmi = 0;
+            if (monthlyRate > 0 && totalMonths > 0) {
+                calculatedEmi = (requestedAmount * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / 
+                                (Math.pow(1 + monthlyRate, totalMonths) - 1);
+            }
+
+            // DTI (Debt To Income Ratio)
+            const totalDebtService = existingEmi + calculatedEmi;
+            const dtiRatio = totalMonthlyIncome > 0 ? (totalDebtService / totalMonthlyIncome) * 100 : 100;
+
+            // Max Eligible Loan Calculation (assumes max allowed DTI = 50%)
+            const maxAllowedDebt = totalMonthlyIncome * 0.50;
+            const maxAvailableEmi = Math.max(0, maxAllowedDebt - existingEmi);
+            
+            let maxLoanAmount = 0;
+            if (monthlyRate > 0 && totalMonths > 0) {
+                maxLoanAmount = (maxAvailableEmi * (Math.pow(1 + monthlyRate, totalMonths) - 1)) / 
+                                (monthlyRate * Math.pow(1 + monthlyRate, totalMonths));
+            }
+
+            // AI Scoring Score Engine (0 - 100)
+            let score = 50; // base
+
+            // Credit Score Component (+/- 30)
+            score += ((creditScore - 650) / 200) * 35;
+
+            // DTI Component
+            if (dtiRatio <= 30) score += 25;
+            else if (dtiRatio <= 40) score += 15;
+            else if (dtiRatio <= 50) score += 0;
+            else score -= 30;
+
+            // Employment Multiplier
+            if (empType === 'salaried_govt') score += 10;
+            if (empType === 'salaried_corporate') score += 5;
+            if (empType === 'freelance') score -= 5;
+
+            // Clamp Score
+            score = Math.min(99, Math.max(12, Math.round(score)));
+
+            // Update UI Header Elements
+            document.getElementById('approvalScoreText').innerText = `${score}%`;
+            document.getElementById('maxLoanLimitText').innerText = `$${Math.round(maxLoanAmount).toLocaleString()}`;
+            document.getElementById('estInterestText').innerText = `${baseRate.toFixed(1)}% - ${(baseRate + 0.8).toFixed(1)}%`;
+            document.getElementById('calculatedEmiText').innerText = `$${Math.round(calculatedEmi).toLocaleString()} / mo`;
+
+            // Update Circle Gauge Arc
+            const scoreArc = document.getElementById('scoreGaugeArc');
+            scoreArc.setAttribute('stroke-dasharray', `${score}, 100`);
+
+            const statusBadge = document.getElementById('statusBadge');
+            const statusBadgeText = document.getElementById('statusBadgeText');
+            const approvalHeadline = document.getElementById('approvalHeadline');
+            const approvalSubtext = document.getElementById('approvalSubtext');
+
+            if (score >= 75) {
+                scoreArc.className.baseVal = "text-emerald-500 transition-all duration-1000 stroke-current";
+                statusBadge.className = "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400";
+                statusBadgeText.innerText = "HIGH APPROVAL CHANCE";
+                approvalHeadline.innerText = "Strong Financial Profile for Underwriting";
+                approvalSubtext.innerText = `Your monthly income of $${totalMonthlyIncome.toLocaleString()} and debt profile demonstrate prime eligibility.`;
+            } else if (score >= 50) {
+                scoreArc.className.baseVal = "text-amber-500 transition-all duration-1000 stroke-current";
+                statusBadge.className = "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400";
+                statusBadgeText.innerText = "MODERATE APPROVAL CHANCE";
+                approvalHeadline.innerText = "Conditional Approval Likely";
+                approvalSubtext.innerText = "Your DTI or credit score places you in a moderate risk bracket. Adjust tenure or amount to improve score.";
+            } else {
+                scoreArc.className.baseVal = "text-rose-500 transition-all duration-1000 stroke-current";
+                statusBadge.className = "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400";
+                statusBadgeText.innerText = "HIGH RISK / ELEVATED DTI";
+                approvalHeadline.innerText = "Action Required to Qualify";
+                approvalSubtext.innerText = "Your monthly debt obligation is high compared to your net disposable income.";
+            }
+
+            // Update DTI Badge
+            const dtiBadge = document.getElementById('dtiBadge');
+            dtiBadge.innerText = `DTI: ${dtiRatio.toFixed(1)}%`;
+            if (dtiRatio <= 35) {
+                dtiBadge.className = "text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400";
+            } else if (dtiRatio <= 50) {
+                dtiBadge.className = "text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400";
+            } else {
+                dtiBadge.className = "text-[10px] font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400";
+            }
+
+            // Update Charts Data
+            updateCharts(totalMonthlyIncome, existingEmi, calculatedEmi);
+
+            // Update Recommendations & Amortization
+            generateDynamicRecommendations(dtiRatio, creditScore, tenureYears, score);
+            renderAmortizationSchedule(requestedAmount, baseRate, tenureYears, calculatedEmi);
+        }
+
+        // Chart.js Visualization Logic
+        function initCharts() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+
+            // Cash Flow Pie Chart
+            const ctx1 = document.getElementById('cashFlowChart').getContext('2d');
+            cashFlowChartInstance = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Existing Debts', 'New Loan EMI', 'Net Disposable Cash'],
+                    datasets: [{
+                        data: [1200, 923, 4377],
+                        backgroundColor: ['#f59e0b', '#6366f1', '#10b981'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: textColor, font: { size: 10, family: 'Inter' } }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+
+            // Income vs Debt Bar Chart
+            const ctx2 = document.getElementById('incomeVsDebtChart').getContext('2d');
+            incomeVsDebtChartInstance = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['Monthly Flow'],
+                    datasets: [
+                        { label: 'Total Net Income', data: [6500], backgroundColor: '#10b981', borderRadius: 6 },
+                        { label: 'Total Debt (Old + New)', data: [2123], backgroundColor: '#f43f5e', borderRadius: 6 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { ticks: { color: textColor } },
+                        y: { ticks: { color: textColor } }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: textColor, font: { size: 10, family: 'Inter' } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateCharts(monthlyIncome, existingEmi, newEmi) {
+            if (!cashFlowChartInstance || !incomeVsDebtChartInstance) return;
+
+            const netDisposable = Math.max(0, monthlyIncome - existingEmi - newEmi);
+
+            // Update Pie Chart
+            cashFlowChartInstance.data.datasets[0].data = [existingEmi, Math.round(newEmi), Math.round(netDisposable)];
+            cashFlowChartInstance.update();
+
+            // Update Bar Chart
+            incomeVsDebtChartInstance.data.datasets[0].data = [monthlyIncome];
+            incomeVsDebtChartInstance.data.datasets[1].data = [Math.round(existingEmi + newEmi)];
+            incomeVsDebtChartInstance.update();
+        }
+
+        function updateChartColors() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+
+            if (cashFlowChartInstance) {
+                cashFlowChartInstance.options.plugins.legend.labels.color = textColor;
+                cashFlowChartInstance.update();
+            }
+            if (incomeVsDebtChartInstance) {
+                incomeVsDebtChartInstance.options.plugins.legend.labels.color = textColor;
+                incomeVsDebtChartInstance.options.scales.x.ticks.color = textColor;
+                incomeVsDebtChartInstance.options.scales.y.ticks.color = textColor;
+                incomeVsDebtChartInstance.update();
+            }
+        }
+
+        // Dynamic Recommendations Engine
+        function generateDynamicRecommendations(dti, score, tenure, overallScore) {
+            const container = document.getElementById('recommendationsContainer');
+            let html = '';
+
+            if (dti > 45) {
+                html += `
+                    <div class="glass-card p-4 rounded-xl space-y-2 border-l-2 border-l-rose-500">
+                        <div class="flex items-center gap-2 text-xs font-bold text-slate-800 dark:text-slate-200">
+                            <i class="fa-solid fa-triangle-exclamation text-rose-500"></i> High Debt Burden Warning
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-400">Your total debt obligations exceed 45% of monthly income. Consider consolidating existing liabilities first.</p>
+                    </div>`;
+            }
+
+            if (score < 720) {
+                html += `
+                    <div class="glass-card p-4 rounded-xl space-y-2 border-l-2 border-l-amber-500">
+                        <div class="flex items-center gap-2 text-xs font-bold text-slate-800 dark:text-slate-200">
+                            <i class="fa-solid fa-arrow-trend-up text-amber-500"></i> Credit Optimization Tip
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-400">Raising credit score above 720 will instantly lower interest rates by up to 2.0% APR.</p>
+                    </div>`;
+            }
+
+            if (tenure < 5 && overallScore < 70) {
+                html += `
+                    <div class="glass-card p-4 rounded-xl space-y-2 border-l-2 border-l-indigo-500">
+                        <div class="flex items-center gap-2 text-xs font-bold text-slate-800 dark:text-slate-200">
+                            <i class="fa-solid fa-calendar-plus text-indigo-500"></i> Extend Tenure Duration
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-400">Increasing your tenure by 2–3 years will significantly lower monthly EMI requirements.</p>
+                    </div>`;
+            }
+
+            html += `
+                <div class="glass-card p-4 rounded-xl space-y-2 border-l-2 border-l-emerald-500">
+                    <div class="flex items-center gap-2 text-xs font-bold text-slate-800 dark:text-slate-200">
+                        <i class="fa-solid fa-user-plus text-emerald-500"></i> Add Co-Applicant Strategy
+                    </div>
+                    <p class="text-xs text-slate-600 dark:text-slate-400">Adding a spouse or family member as co-applicant combines income streams for higher eligibility caps.</p>
+                </div>`;
+
+            container.innerHTML = html;
+        }
+
+        // Amortization Table Generation
+        function renderAmortizationSchedule(principal, annualRate, tenureYears, emi) {
+            const tbody = document.getElementById('amortizationTbody');
+            tbody.innerHTML = '';
+
+            const monthlyRate = annualRate / 100 / 12;
+            let balance = principal;
+            const totalMonths = tenureYears * 12;
+
+            // Render up to first 24 months to keep UI snappy
+            const displayLimit = Math.min(totalMonths, 36);
+
+            for (let month = 1; month <= displayLimit; month++) {
+                const interestPayment = balance * monthlyRate;
+                const principalPayment = emi - interestPayment;
+                balance = Math.max(0, balance - principalPayment);
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition";
+                tr.innerHTML = `
+                    <td class="p-3 text-slate-500 font-bold">Month ${month}</td>
+                    <td class="p-3 font-semibold text-slate-800 dark:text-slate-200">$${Math.round(emi).toLocaleString()}</td>
+                    <td class="p-3 text-emerald-600 dark:text-emerald-400 font-medium">$${Math.round(principalPayment).toLocaleString()}</td>
+                    <td class="p-3 text-rose-500 font-medium">$${Math.round(interestPayment).toLocaleString()}</td>
+                    <td class="p-3 font-semibold text-slate-700 dark:text-slate-300">$${Math.round(balance).toLocaleString()}</td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        // Utility: CSV Export Functionality
+        function exportScheduleCSV() {
+            let csv = 'Month,Payment,Principal,Interest,Remaining Balance\n';
+            const rows = document.querySelectorAll('#amortizationTbody tr');
+            
+            rows.forEach(row => {
+                const cols = row.querySelectorAll('td');
+                const rowData = Array.from(cols).map(c => c.innerText.replace(/\$|,/g, '')).join(',');
+                csv += rowData + '\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'loan_amortization_schedule.csv';
+            a.click();
+            showToast("Amortization schedule CSV downloaded!");
+        }
+
+        // Utility: Print Schedule
+        function printAmortization() {
+            window.print();
+        }
+
+        // Reset Form Helper
+        function resetApplication() {
+            document.getElementById('loanForm').reset();
+            document.getElementById('creditScore').value = 750;
+            updateCreditScoreLabel(750);
+            currentStep = 1;
+            updateStepVisibility();
+            showToast("Form reset to default values.");
+        }
+
+        // Toast Notification Helper
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.innerText = msg;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
