@@ -6,7 +6,9 @@
 
   An intelligent **AI-powered loan eligibility prediction platform** that analyzes financial profiles, estimates loan approval probability, and provides personalized financial recommendations.
 
-  🌐 **[Live Demo – https://drive.google.com/file/d/1jaPYJQ8ghGb--KKMDJzgKSNO1ClwK33e/view?usp=sharing
+  web - https://ai-loan-eligibility-checker-pgjd.vercel.app/
+
+  🌐 Live Demo – https://drive.google.com/file/d/1jaPYJQ8ghGb--KKMDJzgKSNO1ClwK33e/view?usp=sharing
 
 </p>
 
