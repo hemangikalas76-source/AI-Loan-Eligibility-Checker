@@ -4,6 +4,10 @@
 
 A modern, production-quality fintech web application that enables users to check loan eligibility, analyze credit scores, calculate EMI, and receive personalized financial guidance powered by artificial intelligence.
 
+Live Demo – https://drive.google.com/file/d/1jaPYJQ8ghGb--KKMDJzgKSNO1ClwK33e/view?usp=sharing
+
+
+
 ## 📋 Table of Contents
 
 - [Project Overview](#project-overview)
